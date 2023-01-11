@@ -21,6 +21,47 @@ public class AddNewLanguagePage
         addedUserLanguage = false;
         rowIndex = 0;
     }
+
+    public void AddNewUserLanguage(string userLanguage,string langFluency)
+    {
+        //Check if the user language which is being added is not already present, if it is, delete it first
+        CheckLanguageAddedToUser();
+        if (rowIndex > 0)
+        {
+            webElements = driver.FindElements(By.XPath("//td"));
+            webElements[rowIndex + 2].FindElements(By.TagName("span"))[1].Click();
+        }
+        webElements = driver.FindElements(By.XPath("//div[text()='Add New']"));
+        webElement = webElements[0];
+        webElement.Click();
+        webElement = driver.FindElement(By.XPath("//input[@placeholder='Add Language']"));
+        webElement.SendKeys(userLanguage);
+        webElement = driver.FindElement(By.XPath("//select[@name='level']"));
+        webElement.Click();
+        if(langFluency.Equals("Basic"))
+        {
+            webElement = driver.FindElement(By.XPath("//option[@value='Basic']"));
+            webElement.Click();
+        }
+        else if(langFluency.Equals("Conversational"))
+        {
+            webElement = driver.FindElement(By.XPath("//option[@value='Conversational']"));
+            webElement.Click();
+        }
+        else if (langFluency.Equals("Fluent"))
+        {
+            webElement = driver.FindElement(By.XPath("//option[@value='Fluent']"));
+            webElement.Click();
+        }
+        else if (langFluency.Equals("Native"))
+        {
+            webElement = driver.FindElement(By.XPath("//option[@value='Native/Bilingual']"));
+            webElement.Click();
+        }
+        webElement = driver.FindElement(By.XPath("//input[@value='Add']"));
+        webElement.Click();
+        Thread.Sleep(2000);
+    }
     public void AddNewUserLanguage()
     {
         //Check if the user language which is being added is not already present, if it is, delete it first

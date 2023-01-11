@@ -12,6 +12,19 @@ public class AddNewLanguageStepDefinitions
         _addNewLanguagePage=new AddNewLanguagePage(scenarioContext);
     }
 
+    [When(@"User adds a '([^']*)' and '([^']*)'")]
+    public void WhenUserAddsAAnd(string english, string fluent)
+    {
+        _addNewLanguagePage.AddNewUserLanguage(english, fluent);
+    }
+
+    [Then(@"the '([^']*)' and '([^']*)' is updated successfully on the user profile")]
+    public void ThenTheAndIsUpdatedSuccessfullyOnTheUserProfile(string english, string fluent)
+    {
+        
+    }
+
+
     [When(@"User adds a language")]
     public void WhenUserAddsALanguage()
     {
