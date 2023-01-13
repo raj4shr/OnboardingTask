@@ -11,16 +11,16 @@ public sealed class PortalLogInStepDefinition
     public PortalLogInStepDefinition(ScenarioContext _scenarioContext )
     {
         pl = new();
-        LTPP = new();
         scenarioContext = _scenarioContext;
         scenarioContext.Add("driver", pl.Driver);
         scenarioContext.Add("CommonDriver", pl);
+        LTPP = new(scenarioContext);
     }
     
     [Given(@"User logs in to the website")]
     public void GivenUserLogsInToTheWebsite()
     {
-        LTPP.LogintoPortal(pl.Driver);
+        LTPP.LogintoPortal();
     }
 
  }

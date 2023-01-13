@@ -6,19 +6,25 @@ public class LoginToPortalPage
 {
     private IWebDriver? driver;
     private IWebElement? webElement;
-    
+    private ScenarioContext scenarioContext;
 
-    public void LogintoPortal(IWebDriver driver)
+    public LoginToPortalPage(ScenarioContext _scenarioContext)
+    {
+        scenarioContext = _scenarioContext;
+        driver = (IWebDriver)scenarioContext["driver"];
+    }
+
+    public void LogintoPortal()
     {
         driver.Navigate().GoToUrl("http://localhost:5000/");
         driver.Manage().Window.Maximize();
         driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(20);
         webElement = driver.FindElement(By.ClassName("item"));
         webElement.Click();
-        EnterLoginDetails(driver);
+        EnterLoginDetails();
     }
 
-    public void EnterLoginDetails(IWebDriver driver)
+    public void EnterLoginDetails()
     {
         webElement = driver.FindElement(By.Name("email"));
         webElement.SendKeys("raj4shr@gmail.com");
