@@ -12,10 +12,10 @@ public class DeleteUserLanguageStepDefinition
         DLP = new(scenarioContext);
     }
 
-    [When(@"User deletes a language")]
-    public void WhenUserDeletesALanguage()
+    [When(@"User deletes a '([^']*)'")]
+    public void WhenUserDeletesALanguage(string language)
     {
-        DLP.CheckLanguageExists();
+        DLP.CheckLanguageExists(language);
         DLP.DeleteUserLanguage();
     }
 

@@ -12,29 +12,18 @@ public class AddNewLanguageStepDefinitions
         _addNewLanguagePage=new AddNewLanguagePage(scenarioContext);
     }
 
+   
+
+
     [When(@"User adds a '([^']*)' and '([^']*)'")]
-    public void WhenUserAddsAAnd(string english, string fluent)
+    public void WhenNewUserLangaugeIsAdded(string language, string languageLevel)
     {
-        _addNewLanguagePage.AddNewUserLanguage(english, fluent);
+        _addNewLanguagePage.AddNewUserLanguage(language, languageLevel);
     }
 
-    [Then(@"the '([^']*)' and '([^']*)' is updated successfully on the user profile")]
-    public void ThenTheAndIsUpdatedSuccessfullyOnTheUserProfile(string english, string fluent)
+    [Then(@"the user language is added successfully on the user profile")]
+    public void ThenTheUserLanguageIsAddedSuccessfullyOnTheUserProfile()
     {
-        
-    }
-
-
-    [When(@"User adds a language")]
-    public void WhenUserAddsALanguage()
-    {
-        _addNewLanguagePage.AddNewUserLanguage();
-    }
-    [Then(@"the language is updated successfully on the user profile")]
-    public void ThenTheLanguageIsUpdatedSuccessfullyOnTheUserProfile()
-    {
-        _addNewLanguagePage.CheckLanguageAddedToUser();
         _addNewLanguagePage.LanguageAddedAssertion();
     }
-
 }

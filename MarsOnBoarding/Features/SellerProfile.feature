@@ -4,51 +4,70 @@ Possible scenarios for the user profile page
 Background: Login to the website
 	Given User logs in to the website
 
-##3 Following 3 scenarios are implemented for Onboarding Task 2
+## Following 5 scenarios are implemented for Onboarding Task 2
 Scenario Outline: Add new Language
 	When User adds a '<language>' and '<languageLevel>'
-	Then the '<language>' and '<languageLevel>' is updated successfully on the user profile
+	Then the user language is added successfully on the user profile
 
 	Examples: 
-	| language | languageLevel |
-	| English  | Fluent        |
-	| French   | Basic         |
-	| Telugu   | Native        |
+	| language | languageLevel    |
+	| Telugu   | Native/Bilingual |
+	| Hindi    | Fluent           |
 
-Scenario: Update Language
-	When User adds a language
-	And User updates a language
+Scenario Outline: Update Language
+	When User updates a '<language>' to '<updatedLanguage>' and '<updatedLanguageLevel>'
 	Then The language is updated successfully on the user profile
 
-Scenario: Delete Language
-	When User deletes a language
+    Examples: 
+    | language | updatedLanguage | updatedLanguageLevel |
+    | French   | Spanish         | Basic                |
+
+Scenario Outline: Delete Language
+	When User deletes a '<language>'
 	Then The language is deleted successfully from the user profile
 
+    Examples: 
+    | language |
+    | English  |
 
-	##Following scenarios are written for Onboarding Task 1
+
+Scenario Outline: Add new Skill
+    When User adds a '<Skill>' and a '<SkillLevel>'
+
+    Then the skill is added successfully on the user profile
+
+    Examples: 
+    | Skill    | SkillLevel   |
+    | API      | Beginner     |
+    | Selenium | Expert       |
+    | C#       | Intermediate |
+
+
+Scenario Outline: Add new Certification
+    When User adds a '<Certification>', '<CertificationFrom>' and '<Year>'
+
+    Then the certification is added successfully on the user profile
+
+Examples: 
+| Certification | CertificationFrom | Year |
+| ISTQB CTFL    | ANZTB             | 2022 |
+| AZ 900        | Microsoft         | 2023 |
+
+
+
+##Following scenarios are written for Onboarding Task 1
 @ignore
 Scenario: Add new description
     When User adds the description
 
     Then The description is updated successfully on the user profile
 
-@ignore
-Scenario: Add new Skill
-    When User adds a skill
-
-    Then the skill is updated successfully on the user profile
 
 @ignore
 Scenario: Add new Education
     When User adds a education
 
     Then the education is updated successfully on the user profile
-
-@ignore
-Scenario: Add new Certifications
-    When User adds a language
-
-    Then the certification is updated successfully on the user profile
 
 @ignore
 Scenario: Change User Availability
@@ -241,4 +260,6 @@ Scenario: Add Fifth User Language
     When User adds a fifth language
 
     Then The language is not added to the user profile and a message is displayed to the user saying only a maximum of 4 user languages are allowed
+
+
 

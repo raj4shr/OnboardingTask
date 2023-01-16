@@ -1,41 +1,31 @@
 ﻿
-using FluentAssertions.Equivalency;
-using Microsoft.VisualBasic;
-using NUnit.Framework;
-using OpenQA.Selenium;
-using System.Numerics;
-using System.Threading.Channels;
-using System.Xml.Linq;
-using System;
-
 namespace MarsOnBoarding;
 
 public class EditUserLanguagePage
 {
+    private CommonSendKeysAndClick findElements;
     private ScenarioContext? scenarioContext;
-    private readonly IWebDriver driver;
     private ReadOnlyCollection<IWebElement>? webElements;
-    private readonly string language,updatedLanguage;
+    private string language,updatedLanguage;
     private bool UpdatedUserLanguage;
     private int rowIndex;
     private bool updateLang;
-    private IWebElement? webElement;
 
     public EditUserLanguagePage(ScenarioContext _scenarioContext)
     {
+        language = "";
+        updatedLanguage = "";
         scenarioContext = _scenarioContext;
         UpdatedUserLanguage = false;
-        language = "English";
-        updatedLanguage = "Aramaic";
         updateLang = false;
-        driver = (IWebDriver)scenarioContext["driver"];
         rowIndex = -1;
+        findElements = new CommonSendKeysAndClick(scenarioContext);
     }
     public void CheckLanguageExists()
     {
-        //Checking if the language exists before the edit and checking again after the edit
         string inputLanguage = "";
-        webElements = driver.FindElements(By.TagName("td"));
+        webElements = findElements.findElementsByLocator(nameof(By.TagName), "td");
+        Console.WriteLine(webElements.Count.ToString());
         if(updateLang==true)
         {
             inputLanguage = updatedLanguage;
@@ -46,7 +36,7 @@ public class EditUserLanguagePage
         }
         for (int i = 0; i < webElements.Count; i++)
         {
-            if (webElements[i].Text.Equals(inputLanguage) && i < webElements.Count - 1)
+            if (webElements[i].Text.Equals(inputLanguage) && i < webElements.Count)
             {
                 rowIndex = i;
                 UpdatedUserLanguage=true;
@@ -56,25 +46,25 @@ public class EditUserLanguagePage
     }
 
     
-    public void EditUserLanguage()
+    public void EditUserLanguage(string userLanguage,string updatedLanguage,string updatedLanguageLevel)
     {
+        language = userLanguage;
+        this.updatedLanguage= updatedLanguage;
         //Checking before the edit
         CheckLanguageExists();
         if (rowIndex >= 0)
         {
-            webElements = driver.FindElements(By.XPath("//td"));
+            webElements = findElements.findElementsByLocator(nameof(By.TagName), "td");
             webElements[rowIndex + 2].FindElements(By.TagName("span"))[0].Click();
-
-            webElement = driver.FindElement(By.XPath("//input[@placeholder='Add Language']"));
-            webElement.Clear();
-            webElement.SendKeys(updatedLanguage);
-            webElement = driver.FindElement(By.XPath("//input[@value='Update']"));
-            webElement.Click();
-            Thread.Sleep(3000);
+            findElements.sendKeysToElement(nameof(By.XPath), "//input[@placeholder='Add Language']", updatedLanguage);
+            findElements.clickOnElement(nameof(By.XPath), "//select[@name='level']");
+            findElements.clickOnElement(nameof(By.XPath), "//option[@value='" + updatedLanguageLevel + "']");
+            findElements.clickOnElement(nameof(By.XPath), "//input[@value='Update']");
+            Thread.Sleep(1000);
         }
         updateLang = true;
         rowIndex = 0;
-        UpdatedUserLanguage= false;
+        UpdatedUserLanguage = false;
         //Checking after the edit
         CheckLanguageExists();
     }

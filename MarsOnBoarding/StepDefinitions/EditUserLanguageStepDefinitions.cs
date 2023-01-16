@@ -11,11 +11,12 @@ public class EditUserLanguageStepDefinitions
         EULP = new EditUserLanguagePage(scenarioContext);
     }
 
-    [When(@"User updates a language")]
-    public void WhenUserUpdatesALanguage()
+    [When(@"User updates a '([^']*)' to '([^']*)' and '([^']*)'")]
+    public void WhenUserUpdatesALanguage(string language, string updatedLanguage, string updatedLanguageLevel)
     {
-        EULP.EditUserLanguage();
+        EULP.EditUserLanguage(language,updatedLanguage,updatedLanguageLevel);
     }
+
     [Then(@"The language is updated successfully on the user profile")]
     public void ThenTheLanguageIsUpdatedSuccessfullyOnTheUserProfile()
     {
