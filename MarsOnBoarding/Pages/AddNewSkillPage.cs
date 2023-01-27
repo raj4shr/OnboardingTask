@@ -10,6 +10,8 @@ public class AddNewSkillPage
     private bool addedUserSkill;
     private int rowIndex;
     private readonly CommonSendKeysAndClick findElements;
+    private readonly IWebDriver driver;
+    private WebDriverWait wait;
 
     public AddNewSkillPage(ScenarioContext _scenarioContext)
     {
@@ -19,12 +21,17 @@ public class AddNewSkillPage
         addedUserSkill = false;
         rowIndex = -1;
         findElements = new CommonSendKeysAndClick(scenarioContext);
+        driver = (IWebDriver)scenarioContext["driver"];
+        wait = new WebDriverWait(driver, TimeSpan.FromSeconds(20));
     }
 
     public void AddNewUserSkill(string userSkill, string skillLevel)
     {
         findElements.clickOnElement(nameof(By.XPath), "//a[text()='Skills']");
-        findElements.clickOnElement(nameof(By.XPath), "//*[@id=\"account-profile-section\"]/div/section[2]/div/div/div/div[3]/form/div[3]/div/div[2]/div/table/thead/tr/th[3]/div");
+
+        wait.Until(ExpectedConditions.PresenceOfAllElementsLocatedBy(By.XPath("//div[text()='Add New']")));
+        webElements = driver.FindElements(By.XPath("//div[text()='Add New']"));
+        webElements[1].Click();
         findElements.sendKeysToElement(nameof(By.XPath), "//input[@placeholder='Add Skill']", userSkill);
         findElements.clickOnElement(nameof(By.XPath), "//select[@name='level']");
         findElements.clickOnElement(nameof(By.XPath),"//option[@value='" + skillLevel + "']");

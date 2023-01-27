@@ -21,7 +21,8 @@ public class AddNewLanguagePage
     {
         language = userLanguage;
         languageLevel= langFluency;
-        findElements.clickOnElement(nameof(By.XPath), "//*[@id=\"account-profile-section\"]/div/section[2]/div/div/div/div[3]/form/div[2]/div/div[2]/div/table/thead/tr/th[3]/div");
+        webElements = findElements.findElementsByLocator(nameof(By.XPath), "//div[text()='Add New']");
+        webElements[0].Click();
         findElements.sendKeysToElement(nameof(By.XPath), "//input[@placeholder='Add Language']", userLanguage);
         findElements.clickOnElement(nameof(By.XPath), "//select[@name='level']");
         findElements.clickOnElement(nameof(By.XPath), "//option[@value='" + langFluency + "']");
