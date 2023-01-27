@@ -22,6 +22,7 @@ public class AddNewLanguagePage
         language = userLanguage;
         languageLevel= langFluency;
         webElements = findElements.findElementsByLocator(nameof(By.XPath), "//div[text()='Add New']");
+        //Add New button in languages page
         webElements[0].Click();
         findElements.sendKeysToElement(nameof(By.XPath), "//input[@placeholder='Add Language']", userLanguage);
         findElements.clickOnElement(nameof(By.XPath), "//select[@name='level']");
