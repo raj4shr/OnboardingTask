@@ -33,6 +33,7 @@ public class AddNewCertificationPage
         findElements.clickOnElement(nameof(By.XPath), "//a[text()='Certifications']");
         wait.Until(ExpectedConditions.PresenceOfAllElementsLocatedBy(By.XPath("//div[text()='Add New']")));
         webElements = driver.FindElements(By.XPath("//div[text()='Add New']"));
+        //Add New button in certifications page
         webElements[3].Click();
         //findElements.clickOnElement(nameof(By.XPath), "//*[@id=\"account-profile-section\"]/div/section[2]/div/div/div/div[3]/form/div[5]/div[1]/div[2]/div/table/thead/tr/th[4]/div");
         findElements.sendKeysToElement(nameof(By.XPath), "//input[@placeholder='Certificate or Award']", userCertificate);

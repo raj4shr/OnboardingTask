@@ -31,6 +31,7 @@ public class AddNewSkillPage
 
         wait.Until(ExpectedConditions.PresenceOfAllElementsLocatedBy(By.XPath("//div[text()='Add New']")));
         webElements = driver.FindElements(By.XPath("//div[text()='Add New']"));
+        //add New button in skills page
         webElements[1].Click();
         findElements.sendKeysToElement(nameof(By.XPath), "//input[@placeholder='Add Skill']", userSkill);
         findElements.clickOnElement(nameof(By.XPath), "//select[@name='level']");
