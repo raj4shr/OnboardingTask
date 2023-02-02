@@ -3,13 +3,17 @@ namespace MarsOnBoarding;
 
 public class EditUserLanguagePage
 {
-    private CommonSendKeysAndClick findElements;
+    private CommonSendKeysAndClick elementInteractions;
+    private AddNewLanguagePage languagePage;
     private ScenarioContext? scenarioContext;
     private ReadOnlyCollection<IWebElement>? webElements;
     private string language,updatedLanguage;
     private bool UpdatedUserLanguage;
     private int rowIndex;
-    private bool updateLang;
+
+    private readonly By getAllBtnsInLanguageRow = By.TagName("span");
+    private readonly By updateLanguageBtn = By.XPath("//input[@value='Update']");
+    private readonly By getColumnsInLanguageRows = By.TagName("td");
 
     public EditUserLanguagePage(ScenarioContext _scenarioContext)
     {
@@ -17,26 +21,25 @@ public class EditUserLanguagePage
         updatedLanguage = "";
         scenarioContext = _scenarioContext;
         UpdatedUserLanguage = false;
-        updateLang = false;
         rowIndex = -1;
-        findElements = new CommonSendKeysAndClick(scenarioContext);
+        languagePage=new AddNewLanguagePage(scenarioContext);
+        elementInteractions = new CommonSendKeysAndClick(scenarioContext);
     }
+
+    public void GetAllColumnsInLanguageRows()
+    {
+        webElements=elementInteractions.ReturnAllElementsByLocator(getColumnsInLanguageRows);
+    }
+    public void ClickUpdateBtn()
+    {
+        elementInteractions.ClickOnElement(updateLanguageBtn);
+    }
+
     public void CheckLanguageExists()
     {
-        string inputLanguage = "";
-        webElements = findElements.findElementsByLocator(nameof(By.TagName), "td");
-        Console.WriteLine(webElements.Count.ToString());
-        if(updateLang==true)
-        {
-            inputLanguage = updatedLanguage;
-        }
-        else
-        {
-            inputLanguage = language;
-        }
         for (int i = 0; i < webElements.Count; i++)
         {
-            if (webElements[i].Text.Equals(inputLanguage) && i < webElements.Count)
+            if (webElements[i].Text.Equals(language) && i < webElements.Count)
             {
                 rowIndex = i;
                 UpdatedUserLanguage=true;
@@ -50,25 +53,26 @@ public class EditUserLanguagePage
     {
         language = userLanguage;
         this.updatedLanguage= updatedLanguage;
-        //Checking before the edit
+        languagePage.ClickOnLanguageTab();
+        GetAllColumnsInLanguageRows();
+        //Check before edit if the language exists
         CheckLanguageExists();
+        UpdatedUserLanguage = false;
         if (rowIndex >= 0)
         {
-            webElements = findElements.findElementsByLocator(nameof(By.TagName), "td");
-            webElements[rowIndex + 2].FindElements(By.TagName("span"))[0].Click();
-            findElements.sendKeysToElement(nameof(By.XPath), "//input[@placeholder='Add Language']", updatedLanguage);
-            findElements.clickOnElement(nameof(By.XPath), "//select[@name='level']");
-            findElements.clickOnElement(nameof(By.XPath), "//option[@value='" + updatedLanguageLevel + "']");
-            findElements.clickOnElement(nameof(By.XPath), "//input[@value='Update']");
-            Thread.Sleep(1000);
+
+            webElements[rowIndex + 2].FindElements(getAllBtnsInLanguageRow)[0].Click();
+            languagePage.InputNewLanguage(updatedLanguage);
+            languagePage.SelectLanguageLevel(updatedLanguageLevel);
+            ClickUpdateBtn();
+            language=updatedLanguage;
         }
-        updateLang = true;
-        rowIndex = 0;
-        UpdatedUserLanguage = false;
+        elementInteractions.RefreshDriver();
         //Checking after the edit
+        GetAllColumnsInLanguageRows();
         CheckLanguageExists();
     }
-
+  
     public void UpdateAssertion()
     {
         UpdatedUserLanguage.Should().BeTrue();

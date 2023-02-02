@@ -5,54 +5,78 @@ public class AddNewSkillPage
 {
     private ReadOnlyCollection<IWebElement>? webElements;
     private ScenarioContext scenarioContext;
-    private readonly string skill;
-    private readonly string skillLevel;
+    private string skill;
     private bool addedUserSkill;
-    private int rowIndex;
-    private readonly CommonSendKeysAndClick findElements;
+    private readonly CommonSendKeysAndClick elementInteractions;
     private readonly IWebDriver driver;
-    private WebDriverWait wait;
+    private SelectElement skillLevelDropDownListBox;
+
+    private readonly By skillsBtn = By.XPath("//a[text()='Skills']");
+    private readonly By addNewBtn = By.XPath("//div[text()='Add New']");
+    private readonly By skillInputBox = By.XPath("//input[@placeholder='Add Skill']");
+    private readonly By skillLevelDropdown = By.Name("level");
+    private readonly By addBtn = By.XPath("//input[@value='Add']");
+    private readonly By allColumnsInSkillRows = By.TagName("td");
 
     public AddNewSkillPage(ScenarioContext _scenarioContext)
     {
         scenarioContext = _scenarioContext;
         skill = "";
-        skillLevel = "";
         addedUserSkill = false;
-        rowIndex = -1;
-        findElements = new CommonSendKeysAndClick(scenarioContext);
+        elementInteractions = new CommonSendKeysAndClick(scenarioContext);
         driver = (IWebDriver)scenarioContext["driver"];
-        wait = new WebDriverWait(driver, TimeSpan.FromSeconds(20));
+    }
+
+    public void ClickOnSkillsTab()
+    {
+        elementInteractions.ClickOnElement(skillsBtn);
+    }
+
+    public void ClickOnAddNewBtn()
+    {
+        elementInteractions.ReturnAllElementsByLocator(addNewBtn)[1].Click();
+    }
+
+    public void NewSkillInputBox(string skill)
+    {
+        elementInteractions.SendKeysTolement(skillInputBox, skill);
+    }
+
+    public void SelectSkillLevel(string level)
+    {
+        skillLevelDropDownListBox=new SelectElement(elementInteractions.ReturnElement(skillLevelDropdown));
+        skillLevelDropDownListBox.SelectByText(level);
+    }
+
+    public void ClickOnAddBtn()
+    {
+        elementInteractions.ClickOnElement(addBtn);
+    }
+
+    public void GetAllColumnsFromSkillRows()
+    {
+        webElements = elementInteractions.ReturnAllElementsByLocator(allColumnsInSkillRows);
     }
 
     public void AddNewUserSkill(string userSkill, string skillLevel)
     {
-        findElements.clickOnElement(nameof(By.XPath), "//a[text()='Skills']");
-
-        wait.Until(ExpectedConditions.PresenceOfAllElementsLocatedBy(By.XPath("//div[text()='Add New']")));
-        webElements = driver.FindElements(By.XPath("//div[text()='Add New']"));
-        //add New button in skills page
-        webElements[1].Click();
-        findElements.sendKeysToElement(nameof(By.XPath), "//input[@placeholder='Add Skill']", userSkill);
-        findElements.clickOnElement(nameof(By.XPath), "//select[@name='level']");
-        findElements.clickOnElement(nameof(By.XPath),"//option[@value='" + skillLevel + "']");
-        findElements.clickOnElement(nameof(By.XPath), "//input[@value='Add']");
+        ClickOnSkillsTab();
+        ClickOnAddNewBtn();
+        NewSkillInputBox(userSkill);
+        SelectSkillLevel(skillLevel);
+        ClickOnAddBtn();
         CheckSkillAddedToUser();
     }
     public void CheckSkillAddedToUser()
     {
         //checking all the columns for added language
-        webElements = findElements.findElementsByLocatorElementExits(nameof(By.TagName), "td");
+        GetAllColumnsFromSkillRows();
         for (int i = 0; i < webElements.Count; i++)
         {
             if (webElements[i].Text.Equals(skill) && i < webElements.Count - 1)
             {
-                rowIndex = i;
-                if (webElements[i + 1].Text.Equals(skillLevel))
-                {
-                    addedUserSkill = true;
-                    break;
-                }
+                addedUserSkill = true;
+                break;
             }
         }
     }

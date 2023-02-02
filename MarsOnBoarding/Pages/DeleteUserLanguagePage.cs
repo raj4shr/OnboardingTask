@@ -4,22 +4,37 @@ namespace MarsOnBoarding;
 public class DeleteUserLanguagePage
 {
     private ScenarioContext? scenarioContext;
-    private readonly CommonSendKeysAndClick findElements;
+    private readonly CommonSendKeysAndClick elementInteractions;
     private ReadOnlyCollection<IWebElement>? webElements;
     private bool deletedUserLanguage;
     private int rowIndex;
+
+    private readonly By allColumnsInLanguageRows = By.TagName("td");
+    private readonly By buttonsinLanguageRow = By.TagName("span");
 
     public DeleteUserLanguagePage(ScenarioContext _scenarioContext)
 	{
 		scenarioContext = _scenarioContext;
         deletedUserLanguage = false;
         rowIndex = -1;
-        findElements=new CommonSendKeysAndClick(scenarioContext);
+        elementInteractions = new CommonSendKeysAndClick(scenarioContext);
 	}
 
-    public void CheckLanguageExists(string userLanguage)
+    public void GetAllColumnsFromLanguageRows()
     {
-        webElements = findElements.findElementsByLocator(nameof(By.TagName), "td");
+        webElements=elementInteractions.ReturnAllElementsByLocator(allColumnsInLanguageRows);
+    }
+
+
+    public void DeleteLanguage(string userLanguage)
+    {
+        CheckLanguageExists(userLanguage);
+        DeleteUserLanguage();
+    }
+
+  public void CheckLanguageExists(string userLanguage)
+    {
+        GetAllColumnsFromLanguageRows();
         for (int i = 0; i < webElements.Count; i++)
         {
             if (webElements[i].Text.Equals(userLanguage) && i < webElements.Count - 1)
@@ -35,13 +50,12 @@ public class DeleteUserLanguagePage
         //Deleting the row as per the index in the table
         if (rowIndex >= 0)
         {
-            webElements = findElements.findElementsByLocator(nameof(By.XPath), "//td");
-            webElements[rowIndex + 2].FindElements(By.TagName("span"))[1].Click();
+            webElements[rowIndex + 2].FindElements(buttonsinLanguageRow)[1].Click();
             deletedUserLanguage = true;
         }
 
     }
-
+  
     public void DeleteLanguageAssertion()
     {
         deletedUserLanguage.Should().BeTrue();

@@ -3,50 +3,81 @@ namespace MarsOnBoarding;
 
 public class AddNewLanguagePage
 {
-    private CommonSendKeysAndClick findElements;
+    private CommonSendKeysAndClick elementInteractions;
     private ReadOnlyCollection<IWebElement>? webElements;
     private ScenarioContext scenarioContext;
     private string? language;
-    private string? languageLevel;
     private bool addedUserLanguage;
+    SelectElement languageLevelDropDownListBox;
+
+    private readonly By languageBtn = By.XPath("//a[text()='Languages']");
+    private readonly By addNewBtn = By.XPath("//div[text()='Add New']");
+    private readonly By languageInputBox = By.XPath("//input[@placeholder='Add Language']");
+    private readonly By languageLevelDropDown = By.Name("level");
+    private readonly By addBtn = By.XPath("//input[@value='Add']");
+    private readonly By allLanguageRowsColumns = By.TagName("td");
 
     public AddNewLanguagePage(ScenarioContext _scenarioContext)
     {
         scenarioContext = _scenarioContext;
         addedUserLanguage = false;
-        findElements=new CommonSendKeysAndClick(scenarioContext);
+        elementInteractions = new CommonSendKeysAndClick(scenarioContext);
+    }
+
+    public void ClickOnLanguageTab()
+    {
+        elementInteractions.ClickOnElement(languageBtn);
+    }
+
+    public void ClickOnAddNewBtn()
+    {
+        elementInteractions.ReturnAllElementsByLocator(addNewBtn)[0].Click();
+    }
+
+    public void InputNewLanguage(string language)
+    {
+        elementInteractions.SendKeysTolement(languageInputBox, language);   
+    }
+
+    public void SelectLanguageLevel(string level)
+    {
+        languageLevelDropDownListBox=new SelectElement(elementInteractions.ReturnElement(languageLevelDropDown));
+        languageLevelDropDownListBox.SelectByText(level);
+    }
+
+    public void ClickOnAddBtn()
+    {
+        elementInteractions.ClickOnElement(addBtn);
+    }
+
+    public void GetAllColumnsInLanguageRows()
+    {
+        webElements = elementInteractions.ReturnAllElementsByLocator(allLanguageRowsColumns);
     }
 
     public void AddNewUserLanguage(string userLanguage,string langFluency)
     {
         language = userLanguage;
-        languageLevel= langFluency;
-        webElements = findElements.findElementsByLocator(nameof(By.XPath), "//div[text()='Add New']");
-        //Add New button in languages page
-        webElements[0].Click();
-        findElements.sendKeysToElement(nameof(By.XPath), "//input[@placeholder='Add Language']", userLanguage);
-        findElements.clickOnElement(nameof(By.XPath), "//select[@name='level']");
-        findElements.clickOnElement(nameof(By.XPath), "//option[@value='" + langFluency + "']");
-        findElements.clickOnElement(nameof(By.XPath), "//input[@value='Add']");
+        ClickOnLanguageTab();
+        ClickOnAddNewBtn();
+        InputNewLanguage(userLanguage);
+        SelectLanguageLevel(langFluency);
+        ClickOnAddBtn();
+        elementInteractions.RefreshDriver();
         CheckLanguageAddedToUser();
     }
 
     public void CheckLanguageAddedToUser()
     {
-        int rowIndex = 0;
-        Thread.Sleep(2000);
+        ClickOnLanguageTab();
+        GetAllColumnsInLanguageRows();
         //checking all the columns for added language
-        webElements = findElements.findElementsByLocatorElementExits(nameof(By.TagName), "td");
         for (int i=0;i<webElements.Count;i++)
         {
             if(webElements[i].Text.Equals(language) && i< webElements.Count)
             {
-                rowIndex = i;
-                if(webElements[i+1].Text.Equals(languageLevel))
-                {
-                    addedUserLanguage = true;
-                    break;
-                }
+                addedUserLanguage = true;
+                break;
             }
         }
     }

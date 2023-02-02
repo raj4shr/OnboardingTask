@@ -15,8 +15,7 @@ public class DeleteUserLanguageStepDefinition
     [When(@"User deletes a '([^']*)'")]
     public void WhenUserDeletesALanguage(string language)
     {
-        DLP.CheckLanguageExists(language);
-        DLP.DeleteUserLanguage();
+        DLP.DeleteLanguage(language);
     }
 
     [Then(@"The language is deleted successfully from the user profile")]

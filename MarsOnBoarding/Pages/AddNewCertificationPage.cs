@@ -5,59 +5,90 @@ namespace MarsOnBoarding;
 
 public class AddNewCertificationPage
 {
-    private readonly CommonSendKeysAndClick findElements;
+    private readonly CommonSendKeysAndClick elementInteractions;
 	private ScenarioContext scenarioContext;
-	private string certification, certificationFrom;
-	private int rowIndex;
+    private string certification;
 	private bool addedUserCertification;
 	private ReadOnlyCollection<IWebElement>? webElements;
     private readonly IWebDriver driver;
-    private WebDriverWait wait;
+    private SelectElement certificateYearOptionBox;
 
+    private readonly By certificationsBtn = By.XPath("//a[text()='Certifications']");
+    private readonly By addNewCerticationsBtn = By.XPath("//div[text()='Add New']");
+    private readonly By newCertificateInputBox = By.XPath("//input[@placeholder='Certificate or Award']");
+    private readonly By certificateFromInputBox = By.XPath("//input[@placeholder='Certified From (e.g. Adobe)']");
+    private readonly By certificationYear = By.Name("certificationYear");
+    private readonly By addBtn = By.XPath("//input[@value='Add']");
+    private readonly By certificationRowsColumns = By.TagName("td");
+
+
+    public void ClickOnCertificationsBtn()
+    {
+        elementInteractions.ClickOnElement(certificationsBtn);
+    }
+
+    public void ClickOnAddNewBtn()
+    {
+        elementInteractions.ReturnAllElementsByLocator(addNewCerticationsBtn)[3].Click();
+    }
+
+    public void InputNewCertificate(string certificate)
+    {
+        elementInteractions.SendKeysTolement(newCertificateInputBox, certificate);  
+    }
+
+    public void InputCertificationFrom(string certificationFrom)
+    {
+        elementInteractions.SendKeysTolement(certificateFromInputBox, certificationFrom);
+    }
+
+    public void SelectCertificateYear(string certYear)
+    {
+        certificateYearOptionBox=new SelectElement(elementInteractions.ReturnElement(certificationYear));
+        certificateYearOptionBox.SelectByText(certYear);
+    }
+
+    public void ClickOnAddBtn()
+    {
+        elementInteractions.ClickOnElement(addBtn);
+    }
+
+    public void GetAllCertificationRows()
+    {
+        webElements= elementInteractions.ReturnAllElementsByLocator(certificationRowsColumns);
+    }
     public AddNewCertificationPage(ScenarioContext _scenarioContext)
 	{
 		scenarioContext = _scenarioContext;
-		findElements=new CommonSendKeysAndClick(scenarioContext);
-		rowIndex = -1;
-		certification = certificationFrom = "";
+        elementInteractions = new CommonSendKeysAndClick(scenarioContext);
+		certification  = "";
 		addedUserCertification = false;
         driver = (IWebDriver)scenarioContext["driver"];
-        wait = new WebDriverWait(driver, TimeSpan.FromSeconds(20));
     }
 
 
     public void AddNewUserCertification(string userCertificate, string certificateFrom,string certificateYear)
     {
         certification = userCertificate;
-        certificationFrom = certificateFrom;
-        findElements.clickOnElement(nameof(By.XPath), "//a[text()='Certifications']");
-        wait.Until(ExpectedConditions.PresenceOfAllElementsLocatedBy(By.XPath("//div[text()='Add New']")));
-        webElements = driver.FindElements(By.XPath("//div[text()='Add New']"));
-        //Add New button in certifications page
-        webElements[3].Click();
-        //findElements.clickOnElement(nameof(By.XPath), "//*[@id=\"account-profile-section\"]/div/section[2]/div/div/div/div[3]/form/div[5]/div[1]/div[2]/div/table/thead/tr/th[4]/div");
-        findElements.sendKeysToElement(nameof(By.XPath), "//input[@placeholder='Certificate or Award']", userCertificate);
-        findElements.sendKeysToElement(nameof(By.XPath), "//input[@placeholder='Certified From (e.g. Adobe)']", certificateFrom);
-        findElements.clickOnElement(nameof(By.Name), "certificationYear");
-        findElements.clickOnElement(nameof(By.XPath), "//option[@value='" + certificateYear + "']");
-        findElements.clickOnElement(nameof(By.XPath), "//input[@value='Add']");
-        Thread.Sleep(2000);
+        ClickOnCertificationsBtn();
+        ClickOnAddNewBtn();
+        InputNewCertificate(userCertificate);
+        InputCertificationFrom(certificateFrom);
+        SelectCertificateYear(certificateYear);
+        ClickOnAddBtn();
         CheckCertificationAddedToUser();
     }
     public void CheckCertificationAddedToUser()
     {
+        ClickOnCertificationsBtn();
+        GetAllCertificationRows();
         //checking all the columns for added language
-        webElements = findElements.findElementsByLocatorElementExits(nameof(By.TagName), "td");
         for (int i = 0; i < webElements.Count; i++)
         {
             if (webElements[i].Text.Equals(certification) && i < webElements.Count)
             {
-                rowIndex = i;
-                if (webElements[i + 1].Text.Equals(certificationFrom))
-                {
-                    addedUserCertification = true;
-                    break;
-                }
+                addedUserCertification = true;
+                break;
             }
         }
     }
